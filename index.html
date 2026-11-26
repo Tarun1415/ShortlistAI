@@ -221,11 +221,26 @@ go.onclick = async () => {
     fd.append("job_description", jd.value);
     files.forEach(f => fd.append("resumes", f));
     const res = await fetch(API_URL, {method:"POST", body:fd});
-    if(!res.ok){
-      let m = `Server error (${res.status})`;
-      try{ const j = await res.json(); if(j.detail) m = typeof j.detail==="string" ? j.detail : JSON.stringify(j.detail); }catch{}
-      throw new Error(m);
-    }
+    // if(!res.ok){
+    //   let m = `Server error (${res.status})`;
+    //   try{ const j = await res.json(); if(j.detail) m = typeof j.detail==="string" ? j.detail : JSON.stringify(j.detail); }catch{}
+    //   throw new Error(m);
+    // }
+    if (!res.ok) {
+    let message = "Something went wrong. Please try again.";
+
+    try {
+        const result = await res.json();
+
+        if (res.status === 400 || res.status === 422) {
+            message = result.detail || "Invalid input. Please check your files.";
+        } else if (res.status >= 500) {
+            message = "Server is temporarily unavailable. Please try again later.";
+        }
+    } catch {}
+
+    throw new Error(message);
+}
     data = await res.json();
     render();
     $("out").scrollIntoView({behavior:"smooth",block:"start"});
