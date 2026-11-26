@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume Matcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f5f6; --card:#fff; --ink:#0d1f2a; --muted:#5b6b76; --line:#dbe3e8;
+  --brand:#0a6c6c; --brand-d:#07514f; --brand-l:#e1f2f1;
+  --good:#16794c; --good-l:#def3e8; --mid:#b26a00; --mid-l:#fcefd5; --bad:#b3261e; --bad-l:#fbe5e3;
+  --head:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #7cc4c1;outline-offset:2px}
+.top{background:var(--ink);color:#fff}
+.top-in{max-width:1120px;margin:0 auto;padding:44px 24px 84px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:700;font-size:1.05rem;margin-bottom:34px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--brand);display:grid;place-items:center}
+.top h1{font-family:var(--head);font-weight:700;font-size:clamp(2rem,4.6vw,3.3rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 14px;max-width:16ch}
+.top p{margin:0;color:#aebfc8;max-width:52ch;font-size:1.05rem}
+.main{max-width:1120px;margin:-48px auto 0;padding:0 24px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 30px -18px rgba(13,31,42,.35)}
+.inputs{display:grid;grid-template-columns:1.15fr 1fr;gap:20px}
+@media(max-width:860px){.inputs{grid-template-columns:1fr}}
+.card h2{font-family:var(--head);font-size:1.15rem;margin:0 0 4px}
+.card .sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
+.step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--brand-l);color:var(--brand-d);font-size:.78rem;font-weight:600;margin-right:8px}
+textarea{width:100%;height:300px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:14px;font:inherit;background:#fafcfc;color:inherit}
+textarea:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-l)}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.82rem;margin-top:8px}
+.link{background:none;border:0;color:var(--brand);cursor:pointer;padding:0;font-weight:500}
+.drop{border:1.5px dashed #a9bbc4;border-radius:12px;padding:30px 16px;text-align:center;cursor:pointer;background:#fafcfc;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--brand);background:var(--brand-l)}
+.drop svg{display:block;margin:0 auto 8px}
+.drop b{display:block}
+.drop span{color:var(--muted);font-size:.88rem}
+.files{list-style:none;margin:12px 0 0;padding:0;max-height:178px;overflow:auto}
+.files li{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:.9rem}
+.ext{font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:5px;background:var(--brand-l);color:var(--brand-d)}
+.files .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files .s{color:var(--muted);font-size:.8rem}
+.files button{border:0;background:none;cursor:pointer;color:var(--muted);font-size:1.1rem;line-height:1}
+.files button:hover{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:16px;margin-top:20px;flex-wrap:wrap}
+.cta{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:14px 26px;font-weight:600;font-size:1rem;cursor:pointer;transition:background .15s}
+.cta:hover:not(:disabled){background:var(--brand-d)}
+.cta:disabled{background:#9db8b8;cursor:not-allowed}
+.hint{color:var(--muted);font-size:.9rem}
+.alert{margin-top:16px;background:var(--bad-l);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:.93rem}
+.load{margin-top:28px;text-align:center;padding:40px 20px}
+.track{height:6px;background:var(--brand-l);border-radius:3px;overflow:hidden;max-width:360px;margin:0 auto 18px}
+.track i{display:block;height:100%;width:40%;background:var(--brand);border-radius:3px;animation:slide 1.3s ease-in-out infinite}
+@keyframes slide{0%{margin-left:-40%}100%{margin-left:100%}}
+@media(prefers-reduced-motion:reduce){.track i{animation:none;width:100%;opacity:.6}}
+.load b{font-family:var(--head);font-size:1.1rem;display:block}
+.load span{color:var(--muted);font-size:.92rem}
+#out{margin-top:28px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:16px 18px}
+.stat small{color:var(--muted);font-size:.82rem}
+.stat b{display:block;font-family:var(--head);font-size:1.9rem;line-height:1.2;margin-top:2px}
+.job{margin-top:14px}
+.job summary{cursor:pointer;font-weight:600;font-family:var(--head)}
+.job .row{margin-top:12px;font-size:.9rem}
+.job .row>span{color:var(--muted);display:block;margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:3px 10px;border-radius:999px;font-size:.82rem;background:#e9eef1}
+.chip.g{background:var(--good-l);color:var(--good)}
+.chip.r{background:var(--bad-l);color:var(--bad)}
+.head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin:30px 0 12px}
+.head h2{font-family:var(--head);font-size:1.5rem;margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:.88rem;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ghost{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:500}
+.ghost:hover{border-color:var(--brand);color:var(--brand)}
+.cand{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.ch{width:100%;display:grid;grid-template-columns:34px 64px 1fr auto 20px;gap:16px;align-items:center;background:none;border:0;text-align:left;padding:16px 18px;cursor:pointer}
+@media(max-width:640px){.ch{grid-template-columns:26px 56px 1fr 20px}.ch .pill{display:none}}
+.rk{font-family:var(--head);font-weight:700;color:var(--muted);font-size:1.1rem}
+.ring{position:relative;width:60px;height:60px}
+.ring svg{transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--head);font-size:1rem}
+.who b{display:block;font-weight:600}
+.who span{color:var(--muted);font-size:.85rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:.8rem;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.pill.s{background:var(--good-l);color:var(--good)}
+.pill.p{background:var(--mid-l);color:var(--mid)}
+.pill.w{background:var(--bad-l);color:var(--bad)}
+.chev{transition:transform .2s;color:var(--muted)}
+.cand.open .chev{transform:rotate(180deg)}
+.cb{display:none;padding:2px 20px 20px 20px;border-top:1px solid var(--line)}
+.cand.open .cb{display:block}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.cb h4{margin:0 0 6px;font-size:.85rem;color:var(--muted);font-weight:600}
+.verdict{margin:16px 0 0;padding:12px 14px;background:#f4f8f8;border-left:3px solid var(--brand);border-radius:6px;font-size:.95rem}
+.tag{display:inline-block;margin-top:12px;font-size:.82rem;font-weight:600;padding:3px 10px;border-radius:6px}
+.tag.y{background:var(--good-l);color:var(--good)}.tag.n{background:var(--bad-l);color:var(--bad)}.tag.u{background:#e9eef1;color:var(--muted)}
+.mail{margin-left:10px;color:var(--brand);font-size:.88rem}
+.none{color:var(--muted);font-size:.9rem}
+.errc{border-left:4px solid var(--mid);padding:12px 16px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Resume Matcher</div>
+  <h1>Shortlist the right people in minutes.</h1>
+  <p>Add a job description and a stack of resumes. Every candidate is scored against the role, with matching skills, gaps and a clear verdict.</p>
+</div></header>
+
+<main class="main">
+  <div class="inputs">
+    <section class="card">
+      <h2><span class="step">1</span>Job description</h2>
+      <p class="sub">Paste the full posting, including requirements.</p>
+      <textarea id="jd" placeholder="Paste the job description here"></textarea>
+      <div class="meta"><span id="cnt">0 characters</span><button class="link" id="clr" type="button">Clear</button></div>
+    </section>
+    <section class="card">
+      <h2><span class="step">2</span>Resumes</h2>
+      <p class="sub">PDF or DOCX. Add as many as you need.</p>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose resume files">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0a6c6c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+        <b>Drop resumes here</b><span>or click to browse</span>
+      </div>
+      <input type="file" id="pick" accept=".pdf,.docx" multiple hidden>
+      <ul class="files" id="list"></ul>
+    </section>
+  </div>
+  <div class="bar">
+    <button class="cta" id="go" type="button" disabled>Analyze resumes</button>
+    <span class="hint" id="hint">Add a job description and at least one resume.</span>
+  </div>
+  <div id="err"></div>
+  <div id="out"></div>
+</main>
+
+<script>
+const API_URL = location.port === "8000" ? "/analyze" : "http://localhost:8000/analyze";
+const $ = id => document.getElementById(id);
+const jd = $("jd"), go = $("go");
+let files = [], data = null, filter = "all", timer = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const size = b => b > 1048576 ? (b/1048576).toFixed(1)+" MB" : Math.max(1,Math.round(b/1024))+" KB";
+const band = s => s >= 70 ? ["s","Strong match","var(--good)"] : s >= 40 ? ["p","Possible fit","var(--mid)"] : ["w","Weak match","var(--bad)"];
+
+function refresh(){
+  $("list").innerHTML = files.map((f,i)=>`<li><span class="ext">${esc(f.name.split(".").pop().toUpperCase())}</span><span class="n">${esc(f.name)}</span><span class="s">${size(f.size)}</span><button data-i="${i}" type="button" aria-label="Remove ${esc(f.name)}">&times;</button></li>`).join("");
+  $("cnt").textContent = jd.value.length.toLocaleString()+" characters";
+  const ok = jd.value.trim() && files.length;
+  go.disabled = !ok;
+  $("hint").textContent = ok ? `Ready: ${files.length} resume${files.length>1?"s":""}` : "Add a job description and at least one resume.";
+}
+function add(list){
+  for(const f of list) if(/\.(pdf|docx)$/i.test(f.name) && !files.some(x=>x.name===f.name&&x.size===f.size)) files.push(f);
+  refresh();
+}
+const drop = $("drop");
+drop.onclick = () => $("pick").click();
+drop.onkeydown = e => { if(e.key==="Enter"||e.key===" "){e.preventDefault();$("pick").click();} };
+$("pick").onchange = e => { add(e.target.files); e.target.value=""; };
+["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>add(e.dataTransfer.files));
+$("list").onclick = e => { const b=e.target.closest("button[data-i]"); if(b){files.splice(+b.dataset.i,1);refresh();} };
+$("clr").onclick = () => { jd.value=""; refresh(); jd.focus(); };
+jd.oninput = refresh;
+
+function loading(){
+  const steps = ["Reading resumes","Extracting skills and experience","Comparing against the job description","Ranking candidates"];
+  let i = 0;
+  $("out").innerHTML = `<div class="card load"><div class="track"><i></i></div><b id="ls">${steps[0]}</b><span>This takes a short while for each resume. Please keep this tab open.</span></div>`;
+  timer = setInterval(()=>{ i=(i+1)%steps.length; const e=$("ls"); if(e) e.textContent=steps[i]; }, 5000);
+}
+
+go.onclick = async () => {
+  $("err").innerHTML = ""; data = null; filter = "all";
+  go.disabled = true; go.textContent = "Analyzing...";
+  loading();
+  try{
+    const fd = new FormData();
+    fd.append("job_description", jd.value);
+    files.forEach(f => fd.append("resumes", f));
+    const res = await fetch(API_URL, {method:"POST", body:fd});
+    if(!res.ok){
+      let m = `Server error (${res.status})`;
+      try{ const j = await res.json(); if(j.detail) m = typeof j.detail==="string" ? j.detail : JSON.stringify(j.detail); }catch{}
+      throw new Error(m);
+    }
+    data = await res.json();
+    render();
+  }catch(e){
+    $("out").innerHTML = "";
+    $("err").innerHTML = `<div class="alert">${esc(e instanceof TypeError ? "Cannot reach the server. Make sure it is running and open this page at http://localhost:8000." : e.message)}</div>`;
+  }finally{
+    clearInterval(timer); go.textContent = "Analyze resumes"; refresh();
+  }
+};
+
+const chips = (a,c="") => a && a.length ? `<div class="chips">${a.map(x=>`<span class="chip ${c}">${esc(x)}</span>`).join("")}</div>` : `<div class="none">None</div>`;
+
+function ring(s){
+  const r = 26, c = 2*Math.PI*r, col = band(s)[2];
+  return `<div class="ring"><svg width="60" height="60"><circle cx="30" cy="30" r="${r}" fill="none" stroke="#e5ecef" stroke-width="6"/><circle cx="30" cy="30" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(c*s/100).toFixed(1)} ${c.toFixed(1)}"/></svg><b style="color:${col}">${Math.round(s)}</b></div>`;
+}
+
+function cand(c, rank){
+  const s = Math.max(0, Math.min(100, Number(c.score)||0)), b = band(s);
+  const yrs = c.experience_years!=null ? ` (${c.experience_years} yrs)` : "";
+  const exp = c.experience_met===true ? `<span class="tag y">Experience requirement met${yrs}</span>` : c.experience_met===false ? `<span class="tag n">Experience requirement not met${yrs}</span>` : '<span class="tag u">Experience not specified</span>';
+  return `<article class="cand">
+    <button class="ch" type="button" aria-expanded="false">
+      <span class="rk">${rank}</span>${ring(s)}
+      <span class="who"><b>${esc(c.name||"Name not found")}</b><span>${esc(c.file)}</span></span>
+      <span class="pill ${b[0]}">${b[1]}</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="cb">
+      <div class="cols"><div><h4>Matching skills (${(c.matching_skills||[]).length})</h4>${chips(c.matching_skills,"g")}</div><div><h4>Missing skills (${(c.missing_skills||[]).length})</h4>${chips(c.missing_skills,"r")}</div></div>
+      ${exp}${c.email?`<a class="mail" href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:""}
+      <p class="verdict">${esc(c.verdict||"No verdict given.")}</p>
+    </div></article>`;
+}
+
+function render(){
+  const all = data.all_results || [], j = data.job || {};
+  const avg = all.length ? Math.round(all.reduce((a,c)=>a+(Number(c.score)||0),0)/all.length) : 0;
+  const strong = all.filter(c=>c.score>=70).length;
+  const top = all.length ? Math.round(all[0].score) : 0;
+  const view = all.map((c,i)=>({c,i:i+1})).filter(({c})=> filter==="all" || (filter==="s"&&c.score>=70) || (filter==="p"&&c.score>=40&&c.score<70) || (filter==="w"&&c.score<40));
+  const tab = (k,l) => `<button class="tab" type="button" data-f="${k}" aria-pressed="${filter===k}">${l}</button>`;
+
+  let h = `<div class="stats">
+    <div class="card stat"><small>Candidates ranked</small><b>${all.length}</b></div>
+    <div class="card stat"><small>Strong matches</small><b>${strong}</b></div>
+    <div class="card stat"><small>Average score</small><b>${avg}</b></div>
+    <div class="card stat"><small>Top score</small><b>${top}</b></div></div>
+    <details class="card job"><summary>How the role was understood${j.role?": "+esc(j.role):""}</summary>
+      <div class="row"><span>Minimum experience</span>${j.minimum_experience ?? "Not specified"}${j.minimum_experience!=null?" years":""}</div>
+      <div class="row"><span>Required skills</span>${chips(j.required_skills)}</div>
+      <div class="row"><span>Preferred skills</span>${chips(j.preferred_skills)}</div></details>`;
+
+  if(all.length){
+    h += `<div class="head"><h2>Ranked candidates</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <div class="tabs">${tab("all","All")}${tab("s","Strong")}${tab("p","Possible")}${tab("w","Weak")}</div>
+      <button class="ghost" id="csv" type="button">Download CSV</button></div></div>`;
+    h += view.length ? view.map(({c,i})=>cand(c,i)).join("") : `<p class="none">No candidates in this group.</p>`;
+  } else {
+    h += `<div class="alert">No resume could be processed.</div>`;
+  }
+  if(data.errors && data.errors.length){
+    h += `<div class="head"><h2>Could not process</h2></div>` + data.errors.map(e=>`<div class="card errc"><b>${esc(e.file)}</b><div class="hint">${esc(e.error)}</div></div>`).join("");
+  }
+  $("out").innerHTML = h;
+}
+
+$("out").addEventListener("click", e => {
+  const ch = e.target.closest(".ch");
+  if(ch){ const o = ch.parentElement.classList.toggle("open"); ch.setAttribute("aria-expanded", o); return; }
+  const t = e.target.closest(".tab");
+  if(t){ filter = t.dataset.f; render(); return; }
+  if(e.target.id === "csv") exportCsv();
+});
+
+function exportCsv(){
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const rows = [["Rank","Name","Email","Score","Matching skills","Missing skills","Verdict","File"]];
+  (data.all_results||[]).forEach((c,i)=>rows.push([i+1,c.name,c.email,c.score,(c.matching_skills||[]).join("; "),(c.missing_skills||[]).join("; "),c.verdict,c.file]));
+  const blob = new Blob(["\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n")], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "candidates.csv"; a.click();
+  URL.revokeObjectURL(a.href);
+}
+refresh();
+</script>
+</body>
+</html>
