@@ -22,6 +22,10 @@ client = Groq(api_key=api_key)
 MODEL = "openai/gpt-oss-120b"
 
 
+class InputError(Exception):
+    """User ke input me problem (JD ya resume sahi nahi)"""
+
+
 # ---------- Schemas ----------
 class JobD(BaseModel):
     role: str | None = None
@@ -84,23 +88,35 @@ def call_llm(system_prompt: str, user_prompt: str, retries: int = 3) -> dict:
         except Exception as e:
             last_error = e
             time.sleep(2 * (attempt + 1))
-    raise last_error
+    raise RuntimeError(f"AI service se response nahi mila: {last_error}")
 
 
 # ---------- Job description ----------
 def parse_job_description(job_description: str) -> JobD:
+    if len(job_description.strip()) < 40:
+        raise InputError("Job description bahut chhota hai. Poori JD paste karein.")
+
     system_prompt = f"""
 You are an expert HR assistant.
 Extract structured information from the job description.
 Return ONLY valid JSON matching this schema:
 {JobD.model_json_schema()}
 Do NOT return the schema itself. Fill it with real data.
-If minimum experience is missing, return null.
+If minimum experience is missing, return null. It must be a number, not text.
 If a list has no info, return an empty list.
 Do not invent information.
+If the text is NOT a job description, return all fields empty/null.
 """
     data = call_llm(system_prompt, f"Analyze this job description:\n\n{job_description}")
-    return JobD(**data)
+    try:
+        job = JobD(**data)
+    except Exception:
+        raise InputError("Job description samajh nahi aayi. Sahi JD paste karein.")
+
+    # Kuch bhi extract nahi hua => ye JD nahi hai
+    if not job.role and not job.required_skills and not job.responsibilities:
+        raise InputError("Ye job description jaisa nahi lag raha. Sahi JD paste karein.")
+    return job
 
 
 # ---------- Resume ----------
@@ -123,7 +139,10 @@ Rules:
    Use null only if you truly cannot tell.
 """
     data = call_llm(system_prompt, f"Parse this resume:\n\n{resume_text}")
-    return Resume(**data)
+    try:
+        return Resume(**data)
+    except Exception:
+        raise InputError("Resume ka format samajh nahi aaya")
 
 
 def score_resume(job: JobD, resume: Resume) -> MatchResult:
@@ -149,17 +168,30 @@ RESUME:
 {resume.model_dump_json(indent=2)}
 """
     data = call_llm(system_prompt, user_prompt)
-    return MatchResult(**data)
+    try:
+        return MatchResult(**data)
+    except Exception:
+        raise InputError("Scoring result invalid aaya")
 
 
 # ---------- File reading ----------
 def read_pdf(file_path) -> str:
-    reader = PdfReader(file_path)
-    return "\n".join(p.extract_text() or "" for p in reader.pages)
+    try:
+        reader = PdfReader(file_path)
+        if reader.is_encrypted:
+            raise InputError("PDF password-protected hai")
+        return "\n".join(p.extract_text() or "" for p in reader.pages)
+    except InputError:
+        raise
+    except Exception:
+        raise InputError("PDF corrupt hai ya padhi nahi ja sakti")
 
 
 def read_docx(file_path) -> str:
-    doc = Document(file_path)
+    try:
+        doc = Document(file_path)
+    except Exception:
+        raise InputError("DOCX corrupt hai ya padhi nahi ja sakti")
     text = [p.text for p in doc.paragraphs if p.text.strip()]
     for table in doc.tables:
         for row in table.rows:
@@ -249,8 +281,17 @@ def process_candidates(job: JobD, resume_files: list[tuple[str, str]]) -> dict:
             if not text or not text.strip():
                 errors.append({"file": filename, "error": "Text extract nahi hua (scanned PDF ho sakti hai)"})
                 continue
+            if len(text.strip()) < 100:
+                errors.append({"file": filename, "error": "File me bahut kam text hai, ye resume nahi lagta"})
+                continue
 
             resume = parse_resume(text)
+
+            # Naam, email, skills, experience kuch bhi nahi => resume nahi hai
+            if not resume.name and not resume.email and not resume.skills and not resume.experiences:
+                errors.append({"file": filename, "error": "Ye resume jaisa document nahi lag raha"})
+                continue
+
             match = score_resume(job, resume)
 
             results.append({
@@ -270,8 +311,10 @@ def process_candidates(job: JobD, resume_files: list[tuple[str, str]]) -> dict:
                 "growth_areas": match.growth_areas,
                 "interview_focus": match.interview_focus,
             })
-        except Exception as e:
+        except InputError as e:
             errors.append({"file": filename, "error": str(e)})
+        except Exception:
+            errors.append({"file": filename, "error": "Ye file process nahi ho payi. Dusri file try karein."})
 
     results.sort(key=lambda r: r["score"], reverse=True)
 
