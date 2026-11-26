@@ -8,10 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 
-from res_pase import parse_job_description, process_candidates
+from res_pase import parse_job_description, process_candidates, InputError
 
 BASE_DIR = Path(__file__).parent
 ALLOWED = {".pdf", ".docx"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 app = FastAPI(title="Resume Matcher")
 
@@ -42,21 +43,35 @@ async def analyze(
 
     try:
         for f in resumes:
+            if not f.filename:
+                continue
             if Path(f.filename).suffix.lower() not in ALLOWED:
                 continue
+
+            # 5 MB se badi file skip
+            f.file.seek(0, 2)
+            if f.file.tell() > MAX_FILE_SIZE:
+                continue
+            f.file.seek(0)
+
             dest = tmp_dir / Path(f.filename).name
             with open(dest, "wb") as out:
                 shutil.copyfileobj(f.file, out)
             saved.append((f.filename, str(dest)))
 
         if not saved:
-            raise HTTPException(400, "Koi valid PDF/DOCX nahi mili")
+            raise HTTPException(400, "Koi valid PDF/DOCX nahi mili (max 5 MB per file)")
 
         def run():
             job = parse_job_description(job_description)
             return {"job": job.model_dump(), **process_candidates(job, saved)}
 
-        return await run_in_threadpool(run)
+        try:
+            return await run_in_threadpool(run)
+        except InputError as e:
+            raise HTTPException(400, str(e))
+        except RuntimeError as e:
+            raise HTTPException(503, str(e))
 
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
