@@ -33,7 +33,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0
 .pane+.pane{border-left:1px solid var(--line);background:var(--soft)}
 @media(max-width:860px){.pane+.pane{border-left:0;border-top:1px solid var(--line)}}
 .pane h2{margin:0 0 4px;font-size:1.1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
-.n{width:24px;height:24px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:.8rem}
+.num{width:24px;height:24px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:.8rem}
 .sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
 textarea{width:100%;height:290px;resize:vertical;border:1px solid var(--line);border-radius:14px;padding:14px;font:inherit;background:var(--card);color:inherit}
 textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-l)}
@@ -71,48 +71,50 @@ textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(-
 .load b{font-size:1.1rem;display:block}
 .load span{color:var(--muted);font-size:.92rem}
 #out{margin:26px 0 90px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{padding:18px 20px;border-radius:18px}
+.stat{padding:12px 16px;border-radius:14px}
 .stat small{color:var(--muted);font-size:.82rem}
-.stat b{display:block;font-size:2rem;letter-spacing:-.03em;line-height:1.2}
-.job{margin-top:14px;padding:16px 20px;border-radius:18px}
+.stat b{display:block;font-size:1.5rem;letter-spacing:-.03em;line-height:1.25}
+.job{margin-top:10px;padding:12px 16px;border-radius:14px}
 .job summary{cursor:pointer;font-weight:600}
 .job .row{margin-top:12px;font-size:.9rem}
 .job .row>span{color:var(--muted);display:block;margin-bottom:4px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:3px 10px;border-radius:999px;font-size:.82rem;background:var(--soft)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:2px 9px;border-radius:999px;font-size:.78rem;background:var(--soft)}
 .chip.g{background:var(--good-l);color:var(--good)}
 .chip.r{background:var(--bad-l);color:var(--bad)}
-.head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin:30px 0 12px}
-.head h2{font-size:1.6rem;letter-spacing:-.03em;margin:0}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 10px}
+.head h2{font-size:1.25rem;letter-spacing:-.03em;margin:0}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:.88rem;cursor:pointer}
 .tab[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .ghost{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:500}
 .ghost:hover{border-color:var(--brand);color:var(--brand)}
-.cand{margin-bottom:10px;overflow:hidden;border-radius:18px}
-.ch{width:100%;display:grid;grid-template-columns:30px 62px 1fr auto 20px;gap:16px;align-items:center;background:none;border:0;text-align:left;padding:16px 20px;cursor:pointer}
-@media(max-width:640px){.ch{grid-template-columns:24px 56px 1fr 20px}.ch .st{display:none}}
+.cand{margin-bottom:8px;overflow:hidden;border-radius:14px;box-shadow:none}
+.ch{width:100%;display:grid;grid-template-columns:22px 46px 1fr auto 18px;gap:14px;align-items:center;background:none;border:0;text-align:left;padding:12px 16px;cursor:pointer}
+.ch:hover{background:var(--soft)}
+@media(max-width:640px){.ch{grid-template-columns:20px 46px 1fr 18px}.ch .st{display:none}}
 .rk{font-weight:700;color:var(--muted)}
-.ring{position:relative;width:58px;height:58px}
+.ring{position:relative;width:46px;height:46px}
 .ring svg{transform:rotate(-90deg)}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:.98rem}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:.85rem}
 .who b{display:block;font-weight:600}
-.who span{color:var(--muted);font-size:.84rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who span{color:var(--muted);font-size:.8rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .st{font-size:.8rem;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap}
 .st.s{background:var(--good-l);color:var(--good)}.st.p{background:var(--mid-l);color:var(--mid)}.st.w{background:var(--bad-l);color:var(--bad)}
 .chev{transition:transform .2s;color:var(--muted)}
 .cand.open .chev{transform:rotate(180deg)}
-.cb{display:none;padding:4px 22px 22px;border-top:1px solid var(--line)}
+.cb{display:none;padding:14px 18px 16px;border-top:1px solid var(--line)}
 .cand.open .cb{display:block}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:700px){.cols{grid-template-columns:1fr}}
-.cb h4{margin:0 0 6px;font-size:.84rem;color:var(--muted);font-weight:600}
-.verdict{margin:16px 0 0;padding:12px 14px;background:var(--soft);border-left:3px solid var(--brand);border-radius:8px;font-size:.95rem}
-.tag{display:inline-block;margin-top:12px;font-size:.82rem;font-weight:600;padding:3px 10px;border-radius:7px}
+.cb h4{margin:0 0 6px;font-size:.78rem;color:var(--muted);font-weight:600}
+.verdict{margin:12px 0 0;padding:9px 12px;background:var(--soft);border-left:3px solid var(--brand);border-radius:8px;font-size:.9rem}
+.info{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:12px;font-size:.82rem;color:var(--muted)}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:7px;white-space:nowrap}
 .tag.y{background:var(--good-l);color:var(--good)}.tag.n{background:var(--bad-l);color:var(--bad)}.tag.u{background:var(--soft);color:var(--muted)}
-.mail{margin-left:10px;color:var(--brand);font-size:.88rem}
+.mail{color:var(--brand)}
 .none{color:var(--muted);font-size:.9rem}
 .errc{border-left:4px solid var(--mid);padding:12px 16px;margin-bottom:8px;border-radius:14px}
 footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 0 40px}
@@ -130,13 +132,13 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 0 40px}
   <main>
     <div class="card work">
       <section class="pane">
-        <h2><span class="n">1</span>Job description</h2>
+        <h2><span class="num">1</span>Job description</h2>
         <p class="sub">Paste the full posting, including requirements.</p>
         <textarea id="jd" placeholder="Paste the job description here"></textarea>
         <div class="meta"><span id="cnt">0 characters</span><button class="link" id="clr" type="button">Clear</button></div>
       </section>
       <section class="pane">
-        <h2><span class="n">2</span>Resumes</h2>
+        <h2><span class="num">2</span>Resumes</h2>
         <p class="sub">You can upload as many resumes as you need in one go.</p>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose multiple resume files">
           <div class="stack"><i></i><i></i><i>+</i></div>
@@ -228,24 +230,25 @@ go.onclick = async () => {
 const chips = (a,c="") => a && a.length ? `<div class="chips">${a.map(x=>`<span class="chip ${c}">${esc(x)}</span>`).join("")}</div>` : `<div class="none">None</div>`;
 
 function ring(s){
-  const r = 25, c = 2*Math.PI*r, col = band(s)[2];
-  return `<div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="${r}" fill="none" stroke="var(--line)" stroke-width="6"/><circle cx="29" cy="29" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(c*s/100).toFixed(1)} ${c.toFixed(1)}"/></svg><b style="color:${col}">${Math.round(s)}</b></div>`;
+  const r = 19, c = 2*Math.PI*r, col = band(s)[2];
+  return `<div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="${r}" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="23" cy="23" r="${r}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c*s/100).toFixed(1)} ${c.toFixed(1)}"/></svg><b style="color:${col}">${Math.round(s)}</b></div>`;
 }
 
 function cand(c, rank){
   const s = Math.max(0, Math.min(100, Number(c.score)||0)), b = band(s);
-  const yrs = c.experience_years!=null ? ` (${c.experience_years} yrs)` : "";
-  const exp = c.experience_met===true ? `<span class="tag y">Experience requirement met${yrs}</span>` : c.experience_met===false ? `<span class="tag n">Experience requirement not met${yrs}</span>` : '<span class="tag u">Experience not specified</span>';
+  const mt = (c.matching_skills||[]).length, ms = (c.missing_skills||[]).length;
+  const y = c.experience_years!=null ? ` · ${c.experience_years} yrs` : "";
+  const exp = c.experience_met===true ? `<span class="tag y">Experience OK${y}</span>` : c.experience_met===false ? `<span class="tag n">Below experience requirement${y}</span>` : '<span class="tag u">Experience not specified</span>';
   return `<article class="card cand">
     <button class="ch" type="button" aria-expanded="false">
       <span class="rk">${rank}</span>${ring(s)}
-      <span class="who"><b>${esc(c.name||"Name not found")}</b><span>${esc(c.file)}</span></span>
+      <span class="who"><b>${esc(c.name||"Name not found")}</b><span>${mt} matched · ${ms} missing${c.experience_years!=null?" · "+c.experience_years+" yrs":""}</span></span>
       <span class="st ${b[0]}">${b[1]}</span>
       <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
     </button>
     <div class="cb">
-      <div class="cols"><div><h4>Matching skills (${(c.matching_skills||[]).length})</h4>${chips(c.matching_skills,"g")}</div><div><h4>Missing skills (${(c.missing_skills||[]).length})</h4>${chips(c.missing_skills,"r")}</div></div>
-      ${exp}${c.email?`<a class="mail" href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:""}
+      <div class="cols"><div><h4>Matching skills (${mt})</h4>${chips(c.matching_skills,"g")}</div><div><h4>Missing skills (${ms})</h4>${chips(c.missing_skills,"r")}</div></div>
+      <div class="info">${exp}${c.email?`<a class="mail" href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:""}<span>${esc(c.file)}</span></div>
       <p class="verdict">${esc(c.verdict||"No verdict given.")}</p>
     </div></article>`;
 }
