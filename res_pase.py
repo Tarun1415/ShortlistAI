@@ -59,6 +59,12 @@ class MatchResult(BaseModel):
     experience_met: bool | None = None
     score: float
     verdict: str = ""
+    summary: str = ""
+    experience_note: str = ""
+    education_note: str = ""
+    strengths: list[str] = []
+    growth_areas: list[str] = []
+    interview_focus: list[str] = []
 
 
 # ---------- LLM helper (rate limit par retry ke saath) ----------
@@ -128,6 +134,12 @@ Return ONLY valid JSON matching this schema:
 score must be a number from 0 to 100. Keep verdict short.
 Ignore experience duration when judging. Experience is checked separately.
 Focus on skills match and project relevance.
+Also fill these fields, based ONLY on the resume and job data given:
+- summary: 2 sentences at most.
+- experience_note and education_note: 2 sentences at most each.
+- strengths and growth_areas: up to 4 short items each.
+- interview_focus: up to 3 short topics a recruiter should probe.
+Never claim a skill is absent. If a skill is not mentioned, call it "not demonstrated".
 """
     user_prompt = f"""
 JOB:
@@ -251,6 +263,12 @@ def process_candidates(job: JobD, resume_files: list[tuple[str, str]]) -> dict:
                 "experience_met": check_experience(job, resume),
                 "experience_years": calc_experience_years(resume),
                 "verdict": match.verdict,
+                "summary": match.summary,
+                "experience_note": match.experience_note,
+                "education_note": match.education_note,
+                "strengths": match.strengths,
+                "growth_areas": match.growth_areas,
+                "interview_focus": match.interview_focus,
             })
         except Exception as e:
             errors.append({"file": filename, "error": str(e)})
