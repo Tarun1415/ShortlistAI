@@ -29,6 +29,9 @@ def home():
     # Frontend page yahi se serve hota hai
     return FileResponse(BASE_DIR / "index.html")
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 @app.post("/analyze")
 async def analyze(
