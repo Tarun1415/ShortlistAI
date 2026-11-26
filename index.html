@@ -145,7 +145,7 @@ textarea:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(-
 </main>
 
 <script>
-const API_URL = location.port === "8000" ? "/analyze" : "http://localhost:8000/analyze";
+const API_URL = location.protocol === "file:" ? "http://localhost:8000/analyze" : "/analyze";
 const $ = id => document.getElementById(id);
 const jd = $("jd"), go = $("go");
 let files = [], data = null, filter = "all", timer = null;
